@@ -1,4 +1,8 @@
-<h1 align="center">📬 Crypto Report Digest</h1>
+<p align="center">
+  <img src="Icon/AppIcon.png" width="128" alt="Crypto Report Digest icon">
+</p>
+
+<h1 align="center">Crypto Report Digest</h1>
 
 <p align="center">
   <b>Your crypto report in your inbox, plus how far your wallet is from its strategy.</b><br>
