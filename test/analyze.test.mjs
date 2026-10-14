@@ -15,11 +15,21 @@ test('scores every profile between 0 and 100', () => {
   for (const p of a.profiles) assert.ok(p.score >= 0 && p.score <= 100, `${p.name}: ${p.score}`);
 });
 
-test('weights are a share of net worth', () => {
+test('weights are a non-negative share of total assets, debt kept apart', () => {
   const a = analyze(positions, strategy);
   const total = Object.values(a.weights).reduce((s, v) => s + v, 0);
   assert.ok(Math.abs(total - 100) < 0.5, `sum = ${total}`);
-  assert.ok(a.debt > 0 && a.netWorth > 0);
+  for (const [k, v] of Object.entries(a.weights)) assert.ok(v >= 0, `${k} = ${v}`);
+  assert.ok(a.debt > 0);
+  assert.equal(Math.round(a.netWorth), Math.round(a.totalAssets - a.debt));
+});
+
+test('a loan does not change the allocation, only the borrowing check', () => {
+  const noLoan = analyze(positions.filter((r) => r.type !== 'loan'), strategy);
+  const withLoan = analyze(positions, strategy);
+  assert.deepEqual(withLoan.weights, noLoan.weights);
+  const cons = withLoan.profiles.find((p) => p.name === 'conservador');
+  assert.equal(cons.checks[0].ok, false);
 });
 
 test('renders the e-mail with the wallet section', () => {

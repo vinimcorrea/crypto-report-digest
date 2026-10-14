@@ -8,7 +8,7 @@ Regras:
 - Se o report define explicitamente perfis conservador/neutro/agressivo com percentuais, use-os e marque "perfisExplicitos": true.
 - Caso contrário, DERIVE os três perfis a partir das faixas publicadas (ex.: caixa sugerido 15%-30%, portfólio montado nas lives, faixa de empréstimo na AAVE), com conservador no extremo mais seguro, agressivo no mais arriscado e neutro no meio. Marque "perfisExplicitos": false e explique a derivação em "derivacao".
 - Chaves de alocação: tickers em MAIÚSCULAS (BTC, ETH, AAVE, ...), "CAIXA" para stablecoins, "OURO" para ouro tokenizado (XAUT/PAXG) e "OUTROS" para ativos fora da estratégia, que deve ser SEMPRE 0. Todo ativo citado na estratégia ganha sua própria chave com o ticker oficial (ex.: Aerodrome = AERO, Hyperliquid = HYPE, Uniswap = UNI, Jupiter = JUP, Sky = SKY, Pendle = PENDLE, Ethena = ENA). Cada alocação soma exatamente 100.
-- As alocações são % do PATRIMÔNIO LÍQUIDO: dívida (empréstimo em stablecoin) é subtraída de CAIXA, e o dinheiro emprestado aplicado em pools conta pelos ativos da pool (ex.: pool ouro/USDG = metade OURO, metade CAIXA). Por isso, um perfil alavancado pode ter CAIXA líquido baixo.
+- As alocações são % do TOTAL DE ATIVOS (sem descontar dívida), e o empréstimo é tratado à parte em emprestimoMaxPct (% da garantia). O dinheiro emprestado aplicado em pools conta pelos ativos da pool (ex.: pool ouro/USDG = metade OURO, metade CAIXA).
 - "emprestimoMaxPct" = maior % do valor da garantia que pode estar emprestado (0 se o perfil não usa empréstimo).
 - "evitar" = tickers ou protocolos que o report mandou evitar/vender.
 Responda apenas JSON no formato:

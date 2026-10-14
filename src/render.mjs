@@ -100,10 +100,18 @@ function renderWallet(w) {
   const buckets = Object.entries(a.weights).sort((x, y) => Math.abs(y[1]) - Math.abs(x[1]));
 
   let out = h2('🧭 Sua carteira vs. estratégia');
-  out += `<p style="font-size:14px"><a href="https://debank.com/profile/${esc(address)}">${esc(short)}</a> · patrimônio líquido <strong>${usd(a.netWorth)}</strong>`;
-  if (a.debt > 0) out += ` · garantia ${usd(a.collateral)} · dívida ${usd(a.debt)} (${pct(a.ltvPct)} emprestado)`;
+  out += `<p style="font-size:14px"><a href="https://debank.com/profile/${esc(address)}">${esc(short)}</a> · ativos <strong>${usd(a.totalAssets)}</strong>`;
+  if (a.debt > 0) out += ` · dívida ${usd(a.debt)} · patrimônio líquido <strong>${usd(a.netWorth)}</strong>`;
   out += `</p>`;
   out += `<p style="font-size:14px;color:#374151">${esc(s.resumoEstrategia)}</p>`;
+  out += `<table style="width:100%;border-collapse:separate;border-spacing:8px 0;margin:8px -8px 4px"><tr>${a.profiles
+    .map(
+      (p) => `<td style="width:33%;text-align:center;border:1px solid #e5e7eb;border-radius:10px;padding:10px 4px">
+        <div style="font-size:26px;font-weight:800;color:${scoreColor(p.score)}">${p.score}%</div>
+        <div style="height:6px;background:#f1f5f9;border-radius:99px;margin:6px 10px"><div style="width:${p.score}%;height:6px;background:${scoreColor(p.score)};border-radius:99px"></div></div>
+        <div style="font-size:12px;font-weight:600">${PROFILE_LABEL[p.name]}</div></td>`,
+    )
+    .join('')}</tr></table>`;
   if (!s.perfisExplicitos)
     out += `<p style="font-size:12px;color:#6b7280;background:#fef3c7;padding:8px;border-radius:4px">⚠️ O report ainda não publica percentuais por perfil. Os perfis abaixo foram derivados do que foi dito: ${esc(s.derivacao)}</p>`;
 
@@ -119,6 +127,9 @@ function renderWallet(w) {
         ${a.profiles.map((p) => `<td style="text-align:right;padding:6px;color:#6b7280">${pct(p.alocacao[b])}</td>`).join('')}</tr>`,
       )
       .join('')}
+    <tr style="border-top:2px solid #e5e7eb;background:#fafafa"><td style="padding:6px"><strong>EMPRÉSTIMO</strong><br><span style="font-size:11px;color:#6b7280">% da garantia</span></td>
+      <td style="text-align:right;padding:6px">${pct(a.ltvPct)}${a.debt > 0 ? `<br><span style="font-size:11px;color:#6b7280">${usd(a.debt)}</span>` : ''}</td>
+      ${a.profiles.map((p) => `<td style="text-align:right;padding:6px;color:#6b7280">até ${pct(p.emprestimoMaxPct)}</td>`).join('')}</tr>
   </table>`;
   if (a.topOutros.length)
     out += `<p style="font-size:12px;color:#6b7280">OUTROS = fora da estratégia: ${a.topOutros.map(([s, v]) => `${esc(s)} (${usd(v)})`).join(', ')}</p>`;
@@ -149,7 +160,7 @@ function renderWallet(w) {
     out += `<p style="font-size:13px"><strong>Regras citadas no report:</strong></p><ul style="font-size:13px;padding-left:18px">${s.regrasGerais
       .map((r) => `<li>${esc(r)}</li>`)
       .join('')}</ul>`;
-  out += `<p style="font-size:11px;color:#9ca3af">Aderência = 80% alocação (100 − metade da soma das diferenças em p.p., com exposição líquida de dívida) + 20% regras. Os perfis são extraídos por IA do conteúdo do report. Não é recomendação de investimento.</p>`;
+  out += `<p style="font-size:11px;color:#9ca3af">Aderência = 80% alocação (100 − metade da soma das diferenças em p.p., em % do total de ativos) + 20% regras (limite de empréstimo, ativos a evitar, caixa mínimo). Os perfis são extraídos por IA do conteúdo do report. Não é recomendação de investimento.</p>`;
   return out;
 }
 

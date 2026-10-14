@@ -13,14 +13,18 @@ export function analyze(rows, strategy) {
   let debt = 0;
   for (const r of rows) {
     const bucket = bucketOf(r.symbol, known);
-    const signed = r.type === 'loan' ? -r.value : r.value;
-    exposure[bucket] = (exposure[bucket] || 0) + signed;
-    if (r.type === 'loan') debt += r.value;
-    else if (r.type === 'deposit' && r.protocol && /aave|compound|morpho|spark|fluid|euler/i.test(r.protocol)) collateral += r.value;
-    if (bucket === 'OUTROS' && r.type !== 'loan') outrosTokens[r.symbol] = (outrosTokens[r.symbol] || 0) + r.value;
+    // Allocation is a share of total assets; debt is tracked separately (borrowing-limit check).
+    if (r.type === 'loan') {
+      debt += r.value;
+      continue;
+    }
+    exposure[bucket] = (exposure[bucket] || 0) + r.value;
+    if (r.type === 'deposit' && r.protocol && /aave|compound|morpho|spark|fluid|euler/i.test(r.protocol)) collateral += r.value;
+    if (bucket === 'OUTROS') outrosTokens[r.symbol] = (outrosTokens[r.symbol] || 0) + r.value;
   }
-  const netWorth = Object.values(exposure).reduce((a, b) => a + b, 0);
-  const weights = Object.fromEntries(Object.entries(exposure).map(([k, v]) => [k, (v / netWorth) * 100]));
+  const totalAssets = Object.values(exposure).reduce((a, b) => a + b, 0);
+  const netWorth = totalAssets - debt;
+  const weights = Object.fromEntries(Object.entries(exposure).map(([k, v]) => [k, totalAssets ? (v / totalAssets) * 100 : 0]));
   const ltvPct = collateral > 0 ? (debt / collateral) * 100 : 0;
 
   const avoid = new Set(strategy.evitar.map((s) => String(s).toUpperCase()));
@@ -38,7 +42,7 @@ export function analyze(rows, strategy) {
       const target = p.alocacao[b] || 0;
       const diff = target - actual;
       tvd += Math.abs(diff) / 2;
-      if (Math.abs(diff) >= MIN_DIFF_PP) changes.push({ bucket: b, actual, target, usd: (diff / 100) * netWorth });
+      if (Math.abs(diff) >= MIN_DIFF_PP) changes.push({ bucket: b, actual, target, usd: (diff / 100) * totalAssets });
     }
     changes.sort((a, b) => Math.abs(b.usd) - Math.abs(a.usd));
     const allocScore = Math.max(0, 100 - tvd);
@@ -60,7 +64,7 @@ export function analyze(rows, strategy) {
       },
       {
         ok: (weights.CAIXA || 0) >= (p.alocacao.CAIXA || 0) - 5,
-        text: `Caixa líquido (stablecoins menos dívida) em ${(weights.CAIXA || 0).toFixed(0)}% (alvo ${(p.alocacao.CAIXA || 0).toFixed(0)}%)`,
+        text: `Caixa (stablecoins) em ${(weights.CAIXA || 0).toFixed(0)}% (alvo ${(p.alocacao.CAIXA || 0).toFixed(0)}%)`,
         fix: null,
       },
     ];
@@ -74,11 +78,12 @@ export function analyze(rows, strategy) {
       changes,
       checks,
       alocacao: p.alocacao,
+      emprestimoMaxPct: p.emprestimoMaxPct,
     };
   });
 
   const topOutros = Object.entries(outrosTokens).sort((a, b) => b[1] - a[1]).slice(0, 5);
-  return { netWorth, weights, exposure, collateral, debt, ltvPct, profiles, topOutros };
+  return { totalAssets, netWorth, weights, exposure, collateral, debt, ltvPct, profiles, topOutros };
 }
 
 export const fmt = (n) => Math.abs(n).toLocaleString('pt-BR', { maximumFractionDigits: 0 });
