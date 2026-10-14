@@ -1,0 +1,19 @@
+{
+  "name": "crypto-report-digest",
+  "version": "1.0.0",
+  "private": true,
+  "description": "E-mail digest of a crypto report (live summaries, portfolio, news) plus a wallet-vs-strategy adherence score.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Vinicius Correa",
+  "repository": "github:vinimcorrea/crypto-report-digest",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "demo": "EDITIONS_FIXTURE=test/editions-fixture.json WALLET_FIXTURE=test/wallet-fixture.json STRATEGY_FIXTURE=test/strategy-fixture.json WALLET_ADDRESS=0x000000000000000000000000000000000000dEaD node src/main.mjs --dry-run",
+    "preview": "node --env-file=.env src/main.mjs --dry-run",
+    "preview:fixtures": "WALLET_FIXTURE=test/wallet-fixture.json STRATEGY_FIXTURE=test/strategy-fixture.json node --env-file=.env src/main.mjs --dry-run",
+    "send": "node --env-file=.env src/main.mjs",
+    "test": "node --test test/*.test.mjs",
+    "check": "node --check src/*.mjs"
+  }
+}

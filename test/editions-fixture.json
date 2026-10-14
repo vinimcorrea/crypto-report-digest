@@ -1,0 +1,56 @@
+[
+  {
+    "slug": "2000-01-08",
+    "editionNumber": 1,
+    "displayDate": "08/01/00",
+    "lives": [
+      {
+        "label": "LIVE DE SEGUNDA",
+        "schedule": "Segunda, 20h · Panorama da semana",
+        "bullets": [
+          "Exemplo fictício: o host comentou os dados de emprego e o efeito esperado nos juros.",
+          "Tese da live: priorizar protocolos que devolvem receita a quem segura o token.",
+          "Estratégia citada: usar BTC e ETH como garantia e pegar no máximo 30% emprestado."
+        ]
+      },
+      {
+        "label": "LIVE DE QUINTA",
+        "schedule": "Quinta, 20h · Perguntas da comunidade",
+        "bullets": [
+          "Exemplo fictício: manter de 15% a 30% em caixa para aproveitar quedas.",
+          "Regra de saída: reduzir a posição se o health factor ficar abaixo de 1,8."
+        ]
+      }
+    ],
+    "market": {
+      "fearGreed": 42,
+      "fearGreedComment": "Mercado neutro (dado fictício).",
+      "portfolio": [
+        { "ticker": "BTC", "asset": "Bitcoin", "price": "$100.000", "action": "Manter", "type": "hold" },
+        { "ticker": "ETH", "asset": "Ethereum", "price": "$4.000", "action": "Comprar", "type": "buy" },
+        { "ticker": "AAVE", "asset": "Aave", "price": "$300", "action": "Manter", "type": "hold" },
+        { "ticker": "AERO", "asset": "Aerodrome", "price": "$1,20", "action": "Reduzir", "type": "sell" }
+      ],
+      "portfolioDate": "Portfólio de exemplo",
+      "portfolioFootnote": "Caixa sugerido: 15%-30%.",
+      "macroIndicators": [
+        { "label": "DXY", "value": "100", "change": "-0,5%" },
+        { "label": "S&P 500", "value": "6.000", "change": "+1,2%" }
+      ]
+    },
+    "news": {
+      "articles": [
+        { "tag": "REGULAÇÃO", "title": "Notícia de exemplo", "body": "Texto fictício usado no modo demo." },
+        { "tag": "DEFI", "color": "#16a34a", "title": "Outra notícia de exemplo", "body": "Também fictícia." }
+      ]
+    },
+    "yields": {
+      "stats": [
+        { "label": "USDC na Aave", "value": "5% a.a.", "sub": "Exemplo" },
+        { "label": "Pool ouro/dólar", "value": "12% a.a.", "sub": "Exemplo" }
+      ]
+    },
+    "onchain": { "articleTitle": "Fluxo on-chain de exemplo", "card1": { "intro": "Dados fictícios." } },
+    "tips": { "topic": "Use uma carteira de hardware", "howItWorksBody": ["Dica fictícia do modo demo."] }
+  }
+]
