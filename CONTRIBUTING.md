@@ -24,7 +24,7 @@ Source layout (`src/`):
 
 Fixtures in `test/` let you run everything offline: `EDITIONS_FIXTURE`, `WALLET_FIXTURE` and `STRATEGY_FIXTURE`.
 
-If you change the e-mail layout, regenerate the screenshots in `docs/` from `npm run demo`.
+If you change the e-mail layout, regenerate `docs/preview.png` from `npm run demo`. The README banner `docs/hero.png` is a 1280×640 screenshot of `docs/hero.html`, which also works as the repository's social preview image.
 
 ## Pull requests
 

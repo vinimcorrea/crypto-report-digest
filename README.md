@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/wallet.png" width="560" alt="Digest e-mail with the wallet vs. strategy section">
+  <img src="docs/hero.png" width="860" alt="Crypto Report Digest: adherence score per risk profile and the moves to rebalance">
 </p>
 
 ---
@@ -34,7 +34,7 @@ Your crypto community publishes a weekly report with the summaries of its lives,
 - 🎙️ **The whole edition**: live summaries, reference portfolio with buy/hold/sell, fear & greed, macro, news, yields, on-chain and the tip of the week.
 - 🧭 **Wallet vs. strategy**: an adherence score (0–100%) for the **conservative**, **neutral** and **aggressive** profiles, with a table of current vs. target allocation.
 - 🛠️ **What to change**: concrete moves in US$ (e.g. *reduce BTC from 69% to 40%, -$1,680*), plus checks for the borrowing limit, minimum cash and assets to avoid.
-- 🏦 **DeFi aware**: reads Aave deposits and loans, LPs and staking on every chain through the [Zerion API](https://developers.zerion.io). Debt is subtracted from cash, and wrapped assets are grouped (WBTC/cbBTC → BTC, WETH/stETH → ETH, stablecoins → cash, XAUT/PAXG → gold).
+- 🏦 **DeFi aware**: reads Aave deposits and loans, LPs and staking on every chain through the [Zerion API](https://developers.zerion.io). Allocation is a share of your total assets (never negative), debt is checked against each profile's borrowing limit, and wrapped assets are grouped (WBTC/cbBTC → BTC, WETH/stETH → ETH, stablecoins → cash, XAUT/PAXG → gold).
 - 🤖 **LLM strategy extraction**: [Gemini](https://aistudio.google.com) reads the last 4 editions and turns them into structured profiles. When the report doesn't publish explicit percentages, they are derived from the ranges it mentions and the e-mail says so.
 - 🔐 **Private by design**: everything that identifies you lives in Actions **secrets**, logs never contain balances, and no artifacts are uploaded.
 - 🪶 **Zero dependencies**: plain Node 22, about 550 lines.
@@ -69,11 +69,22 @@ Your crypto community publishes a weekly report with the summaries of its lives,
 
 ## 🧠 How it works
 
+```mermaid
+flowchart LR
+    A[⏰ Daily cron<br>GitHub Actions] --> B[📰 Report site<br>new edition?]
+    B -- no --> Z[💤 exit]
+    B -- yes --> C[🤖 Gemini<br>extracts 3 profiles]
+    B --> D[🏦 Zerion<br>wallet positions]
+    C --> E[🧮 Adherence score<br>+ moves in US$]
+    D --> E
+    E --> F[📬 Resend<br>HTML e-mail]
+```
+
 | Step | What happens |
 |---|---|
 | **Fetch** | Downloads the report site with HTTP Basic Auth and extracts the editions embedded in its JS bundle (an array of objects with `slug`, `lives`, `market`, `news`, `yields`, `onchain`, `tips`). For another site, adapt `src/extract.mjs`. |
 | **Strategy** | Gemini reads the last 4 editions and returns the profiles: allocation %, max borrowing, rules and assets to avoid. |
-| **Wallet** | Zerion returns balances and DeFi positions. Assets are grouped into buckets and loans are negative. |
+| **Wallet** | Zerion returns balances and DeFi positions. Assets are grouped into buckets as a % of total assets; loans are kept apart as % of collateral. |
 | **Score** | 80% allocation (100 − half the sum of the differences in p.p.) + 20% rules (borrowing limit, assets to avoid, minimum cash). |
 | **Send** | The e-mail goes out through Resend and `state/last-sent.txt` is committed so the same edition is never sent twice. |
 
