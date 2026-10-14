@@ -1,25 +1,27 @@
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { fetchEditions, SITE_URL } from './extract.mjs';
 import { renderEdition } from './render.mjs';
+import { renderReport } from './report.mjs';
 import { fetchPositions } from './wallet.mjs';
 import { extractStrategy } from './strategy.mjs';
 import { analyze } from './analyze.mjs';
 
 const STATE_FILE = new URL('../state/last-sent.txt', import.meta.url);
+const REPORT_FILE = 'relatorio-interativo.html';
 const args = new Set(process.argv.slice(2));
 const dryRun = args.has('--dry-run');
 // --preview: sends the email with a [PRÉVIA] tag and does not record state (safe for testing in CI without artifacts).
 const preview = args.has('--preview');
 const force = args.has('--force') || preview;
 
-async function sendEmail({ subject, html }) {
+async function sendEmail({ subject, html, attachments }) {
   const { RESEND_API_KEY, EMAIL_TO } = process.env;
   const EMAIL_FROM = process.env.EMAIL_FROM || `${process.env.REPORT_NAME || 'Crypto Report'} <onboarding@resend.dev>`;
   if (!RESEND_API_KEY || !EMAIL_TO) throw new Error('RESEND_API_KEY/EMAIL_TO não definidos');
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ from: EMAIL_FROM, to: EMAIL_TO.split(',').map((s) => s.trim()), subject, html }),
+    body: JSON.stringify({ from: EMAIL_FROM, to: EMAIL_TO.split(',').map((s) => s.trim()), subject, html, attachments }),
   });
   const body = await res.text();
   if (!res.ok) throw new Error(`Resend ${res.status}: ${body}`);
@@ -58,11 +60,14 @@ async function walletReport() {
 }
 
 const wallet = await walletReport();
-const email = renderEdition(latest, SITE_URL, wallet);
+const report = renderReport(latest, wallet, SITE_URL);
+const email = renderEdition(latest, SITE_URL, wallet, Boolean(report));
+if (report) email.attachments = [{ filename: REPORT_FILE, content: Buffer.from(report).toString('base64') }];
 if (preview) email.subject = '[PRÉVIA] ' + email.subject;
 if (dryRun) {
   await writeFile('preview.html', email.html);
-  console.log(`Prévia salva em preview.html (assunto: ${email.subject})`);
+  if (report) await writeFile(REPORT_FILE, report);
+  console.log(`Prévia salva em preview.html${report ? ` e ${REPORT_FILE}` : ''} (assunto: ${email.subject})`);
 } else {
   await sendEmail(email);
   if (preview) process.exit(0);

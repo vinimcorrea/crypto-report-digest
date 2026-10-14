@@ -38,10 +38,16 @@ Your crypto community publishes a weekly report with the summaries of its lives,
 - 🎙️ **The whole edition**: live summaries, reference portfolio with buy/hold/sell, fear & greed, macro, news, yields, on-chain and the tip of the week.
 - 🧭 **Wallet vs. strategy**: an adherence score (0–100%) for the **conservative**, **neutral** and **aggressive** profiles, with a table of current vs. target allocation.
 - 🛠️ **What to change**: concrete moves in US$ (e.g. *reduce BTC from 69% to 40%, -$1,680*), plus checks for the borrowing limit, minimum cash and assets to avoid.
+- 📊 **Interactive report attached**: a self-contained `relatorio-interativo.html` with score rings, a tab per profile, current-vs-target bars, an allocation donut and a **what-if simulator** (drag your positions and debt, watch every profile's score update live). No CDN, no tracking; it works offline.
 - 🏦 **DeFi aware**: reads Aave deposits and loans, LPs and staking on every chain through the [Zerion API](https://developers.zerion.io). Allocation is a share of your total assets (never negative), debt is checked against each profile's borrowing limit, and wrapped assets are grouped (WBTC/cbBTC → BTC, WETH/stETH → ETH, stablecoins → cash, XAUT/PAXG → gold).
 - 🤖 **LLM strategy extraction**: [Gemini](https://aistudio.google.com) reads the last 4 editions and turns them into structured profiles. When the report doesn't publish explicit percentages, they are derived from the ranges it mentions and the e-mail says so.
 - 🔐 **Private by design**: everything that identifies you lives in Actions **secrets**, logs never contain balances, and no artifacts are uploaded.
-- 🪶 **Zero dependencies**: plain Node 22, about 550 lines.
+- 🪶 **Zero dependencies**: plain Node 22, no build step.
+
+<details>
+<summary>📊 Interactive report (attachment)</summary>
+<p align="center"><img src="docs/report.png" width="760" alt="Interactive report with scores, allocation bars, donut and simulator"></p>
+</details>
 
 <details>
 <summary>📸 Full e-mail</summary>
@@ -81,7 +87,7 @@ flowchart LR
     B --> D[🏦 Zerion<br>wallet positions]
     C --> E[🧮 Adherence score<br>+ moves in US$]
     D --> E
-    E --> F[📬 Resend<br>HTML e-mail]
+    E --> F[📬 Resend<br>HTML e-mail<br>+ interactive report]
 ```
 
 | Step | What happens |
@@ -90,7 +96,7 @@ flowchart LR
 | **Strategy** | Gemini reads the last 4 editions and returns the profiles: allocation %, max borrowing, rules and assets to avoid. |
 | **Wallet** | Zerion returns balances and DeFi positions. Assets are grouped into buckets as a % of total assets; loans are kept apart as % of collateral. |
 | **Score** | 80% allocation (100 − half the sum of the differences in p.p.) + 20% rules (borrowing limit, assets to avoid, minimum cash). |
-| **Send** | The e-mail goes out through Resend and `state/last-sent.txt` is committed so the same edition is never sent twice. |
+| **Send** | The e-mail (email-safe HTML) and the interactive report (attached `.html` with inline JS) go out through Resend and `state/last-sent.txt` is committed so the same edition is never sent twice. |
 
 The e-mail content is in Portuguese (pt-BR), like the report it summarizes.
 
@@ -101,7 +107,7 @@ Requires Node 22+. No `npm install` needed.
 ```bash
 git clone https://github.com/vinimcorrea/crypto-report-digest.git
 cd crypto-report-digest
-npm run demo               # offline demo with fictional data -> preview.html
+npm run demo               # offline demo with fictional data -> preview.html + relatorio-interativo.html
 cp .env.example .env       # fill in your values
 npm run preview            # real data -> preview.html (nothing is sent)
 npm run preview:fixtures   # real report, fictional wallet/strategy (no Zerion/Gemini calls)
@@ -113,6 +119,7 @@ npm run send               # send for real
 - Run your instance in a **private** repository.
 - Personal data (site, e-mail, wallet) only goes in **secrets**, never in variables: GitHub masks secrets in logs but not variables.
 - Logs only contain error messages, never positions or balances, and the workflow uploads no artifacts.
+- The interactive report is a single attached file with no external requests, so your wallet data is never sent to a third party when you open it.
 - Everything in `test/` is fictional.
 
 ## 🗺️ Roadmap

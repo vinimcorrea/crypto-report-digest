@@ -24,7 +24,7 @@ Source layout (`src/`):
 
 Fixtures in `test/` let you run everything offline: `EDITIONS_FIXTURE`, `WALLET_FIXTURE` and `STRATEGY_FIXTURE`.
 
-If you change the e-mail layout, regenerate `docs/preview.png` from `npm run demo`. The README banner `docs/hero.png` is a 1280×640 screenshot of `docs/hero.html`, which also works as the repository's social preview image. The icon `Icon/AppIcon.png` is rendered from `Icon/icon.svg` at 1024×1024.
+If you change the e-mail layout, regenerate `docs/preview.png` from `npm run demo`; for the attachment (`src/report.mjs`), regenerate `docs/report.png` from `relatorio-interativo.html`. Keep the report self-contained: no external scripts, fonts or images. The README banner `docs/hero.png` is a 1280×640 screenshot of `docs/hero.html`, which also works as the repository's social preview image. The icon `Icon/AppIcon.png` is rendered from `Icon/icon.svg` at 1024×1024.
 
 ## Pull requests
 

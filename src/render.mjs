@@ -164,14 +164,19 @@ function renderWallet(w) {
   return out;
 }
 
-export function renderEdition(ed, siteUrl, wallet) {
+export function renderEdition(ed, siteUrl, wallet, hasReport = false) {
   const name = process.env.REPORT_NAME || 'Crypto Report';
   const url = `${siteUrl}/edition/${ed.slug}`;
   const subject = `${name} #${ed.editionNumber ?? ''} (${ed.displayDate ?? ed.slug}): resumo das lives`;
   const html = `<!doctype html><html><body style="margin:0;background:#f3f4f6">
-  <div style="max-width:640px;margin:0 auto;background:#fff;padding:24px 28px;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;line-height:1.5;color:#111">
-    <div style="font-size:12px;color:#6b7280">Edição #${esc(ed.editionNumber)} · ${esc(ed.displayDate)}</div>
-    <h1 style="font-size:24px;margin:4px 0 0">${esc(name)}</h1>
+  <div style="max-width:640px;margin:0 auto;background:#fff;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;line-height:1.5;color:#111">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td bgcolor="#0b1020" style="background:#0b1020;background-image:linear-gradient(135deg,#312e81,#0b1020 70%);padding:22px 28px;color:#fff">
+      <span style="display:inline-block;background:#f59e0b;color:#111;font-size:11px;font-weight:700;border-radius:99px;padding:2px 10px">Edição #${esc(ed.editionNumber)} · ${esc(ed.displayDate)}</span>
+      <div style="font-size:26px;font-weight:800;margin-top:6px;color:#fff">${esc(name)}</div>
+      <div style="font-size:13px;color:#cbd5e1">Resumo das lives, do chat e da sua carteira</div>
+    </td></tr></table>
+    <div style="padding:8px 28px 24px">
+    ${hasReport ? `<p style="margin:16px 0 0;padding:10px 14px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;font-size:13px">📎 <strong>Relatório interativo em anexo</strong> (relatorio-interativo.html): gráficos, abas por perfil e simulador da carteira. Baixe e abra no navegador.</p>` : ''}
     ${renderWallet(wallet)}
     ${renderLives(ed.lives)}
     ${renderMarket(ed.market)}
@@ -180,6 +185,6 @@ export function renderEdition(ed, siteUrl, wallet) {
     ${renderOnchain(ed.onchain)}
     ${renderTips(ed.tips)}
     <p style="margin-top:32px;text-align:center"><a href="${esc(url)}" style="background:#f59e0b;color:#111;padding:10px 18px;border-radius:6px;text-decoration:none;font-weight:600">Ver edição completa</a></p>
-  </div></body></html>`;
+  </div></div></body></html>`;
   return { subject, html };
 }

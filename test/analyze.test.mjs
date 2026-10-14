@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { analyze } from '../src/analyze.mjs';
+import { renderReport } from '../src/report.mjs';
 import { renderEdition } from '../src/render.mjs';
 
 const load = async (f) => JSON.parse(await readFile(new URL(f, import.meta.url), 'utf8'));
@@ -38,4 +39,14 @@ test('renders the e-mail with the wallet section', () => {
   assert.match(subject, /#1/);
   assert.match(html, /aderente/);
   assert.match(html, /Lives da semana/);
+});
+
+test('interactive report is self-contained and escapes token names', () => {
+  const evil = positions.map((r, i) => (i === 0 ? { ...r, symbol: '<img src=x onerror=alert(1)>' } : r));
+  const wallet = { address: '0x000000000000000000000000000000000000dEaD', strategy, analysis: analyze(evil, strategy) };
+  const html = renderReport(edition, wallet, 'https://example.com');
+  assert.match(html, /Simulador/);
+  assert.doesNotMatch(html, /<img src=x/);
+  assert.doesNotMatch(html, /<script[^>]+src=|<link[^>]+href=/);
+  assert.equal(renderReport(edition, null), null);
 });
