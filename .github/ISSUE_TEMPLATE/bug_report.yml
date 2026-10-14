@@ -1,0 +1,33 @@
+name: 🐛 Bug report
+description: Something isn't working
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: "⚠️ Never paste API keys, report credentials or your wallet address. Redact logs before sharing."
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output (redacted)
+      render: text
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where does it run?
+      options: [GitHub Actions, Locally]
+  - type: input
+    id: node
+    attributes:
+      label: Node version
+      placeholder: "22.x"
