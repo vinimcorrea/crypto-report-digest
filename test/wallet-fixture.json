@@ -1,0 +1,11 @@
+[
+ {"symbol":"USDC","value":500,"type":"wallet","protocol":null,"chain":"base"},
+ {"symbol":"UNI","value":120,"type":"wallet","protocol":null,"chain":"ethereum"},
+ {"symbol":"LINK","value":80,"type":"wallet","protocol":null,"chain":"arbitrum"},
+ {"symbol":"WBTC","value":4000,"type":"deposit","protocol":"Aave V3","chain":"base"},
+ {"symbol":"WETH","value":1500,"type":"deposit","protocol":"Aave V3","chain":"base"},
+ {"symbol":"AAVE","value":300,"type":"deposit","protocol":"Aave V3","chain":"base"},
+ {"symbol":"USDC","value":1500,"type":"loan","protocol":"Aave V3","chain":"base"},
+ {"symbol":"XAUT","value":400,"type":"deposit","protocol":"Uniswap V3","chain":"ethereum"},
+ {"symbol":"USDG","value":400,"type":"deposit","protocol":"Uniswap V3","chain":"ethereum"}
+]

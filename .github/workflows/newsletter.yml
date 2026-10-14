@@ -1,0 +1,55 @@
+name: Newsletter
+
+on:
+  schedule:
+    # Every day at 21:00 UTC; only sends when there is a new edition.
+    - cron: '0 21 * * *'
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Resend the latest edition even if it was already sent'
+        type: boolean
+        default: false
+      preview:
+        description: 'Send a test e-mail tagged [PRÉVIA] without recording state'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: newsletter
+  cancel-in-progress: false
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # Everything that identifies you (site, e-mail, wallet) comes from secrets so GitHub masks it in the logs.
+      # Never upload previews as artifacts: in public repos anyone can download them.
+      - name: Build and send the digest
+        env:
+          REPORT_BASE_URL: ${{ secrets.REPORT_BASE_URL }}
+          REPORT_USER: ${{ secrets.REPORT_USER }}
+          REPORT_PASS: ${{ secrets.REPORT_PASS }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          ZERION_API_KEY: ${{ secrets.ZERION_API_KEY }}
+          WALLET_ADDRESS: ${{ secrets.WALLET_ADDRESS }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          REPORT_NAME: ${{ vars.REPORT_NAME }}
+          LLM_MODEL: ${{ vars.LLM_MODEL }}
+        run: node src/main.mjs ${{ inputs.force && '--force' || '' }} ${{ inputs.preview && '--preview' || '' }}
+      - name: Save state
+        if: ${{ !inputs.preview }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898+github-actions[bot]@users.noreply.github.com"
+          git add state/
+          git diff --cached --quiet || (git commit -m "chore: record last sent edition" && git push)

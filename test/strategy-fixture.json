@@ -1,0 +1,8 @@
+{"edicaoBase":"2000-01-01","perfisExplicitos":false,
+"derivacao":"Exemplo fictício para testes: faixa de caixa 15%-30% e empréstimo de 25%-40% da garantia.",
+"resumoEstrategia":"Estratégia fictícia usada nos testes locais.",
+"perfis":{
+ "conservador":{"descricao":"Caixa alto, sem alavancagem.","alocacao":{"CAIXA":30,"BTC":40,"ETH":20,"AAVE":10,"OUTROS":0},"emprestimoMaxPct":0,"regras":[]},
+ "neutro":{"descricao":"Equilibrado, empréstimo moderado.","alocacao":{"CAIXA":25,"BTC":30,"ETH":15,"AAVE":15,"AERO":5,"OURO":10,"OUTROS":0},"emprestimoMaxPct":30,"regras":[]},
+ "agressivo":{"descricao":"Caixa mínimo, empréstimo até 40%.","alocacao":{"CAIXA":15,"BTC":30,"ETH":20,"AAVE":15,"AERO":10,"OURO":10,"OUTROS":0},"emprestimoMaxPct":40,"regras":[]}},
+"evitar":["SCAMCOIN"],"regrasGerais":["Regra de exemplo"]}
